@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/login.css">
+    <title>Login</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="mainContainer">
+            <div class="card">
+                <div class="authHeader">
+                    <h1>Login</h1>
+                    <p id="errorMessageId" class="errorMessage"></p>
+                </div>
+                <div class="authMain">
+                    <input type="text" id="uoeInput" placeholder="Username or E-mail">
+                    <input type="password" id="passwordInput" placeholder="Password (at least 6 characters)">
+                </div>
+                <div class="authFooter">
+                    <button id="loginButton">Login</button>
+                    <p class="footerText">Don't have an account? <a href="/register">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/login.js"></script>
+</body>
+</html>
