@@ -5,9 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/modal.css">
     <title>Home</title>
 </head>
 <body>
+    <script>
+        var userLoggedIn = {{{ userLoggedInJs }}}
+    </script>
     <div class="wrapper">
         <div class="mainContainer">
             <div class="leftSide">
@@ -17,176 +21,14 @@
                 
                 <div class="chatsSection">
                     <div class="searchSection">
-                        <input type="text" placeholder="Search for users..." id="userSearchbox">
+                        <input type="text" placeholder="Search for chats..." id="chatSearchbox">
                         <button id="newMessageButton">+</button>
                     </div>
                     <div class="chats">
                         <ul class="chatList">
                             <li class="chatPreview">
                                 <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
-                                </div>
-                                <div class="chatPreviewContent">
-                                    <p>Name Today</p>
-                                    <p>Message</p>
-                                </div>
-                            </li>
-                            <li class="chatPreview">
-                                <div class="chatPreviewProfilePicture">
-                                    <img src="{{profilePic}}" alt="Profile Picture">
+                                    <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
                                 </div>
                                 <div class="chatPreviewContent">
                                     <p>Name Today</p>
@@ -198,13 +40,13 @@
                     </div>
                 </div>
                 <div class="profileSettings">
-                    <img src="{{profilePic}}" alt="Profile Picture">
+                    <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
                     <p>Settings</p>
                 </div>
             </div>
             <div class="messagingSection">
                 <div class="chatHeader">
-                    <img src="{{profilePic}}" alt="Profile Picture">
+                    <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
                     <h1>Name</h1>
                 </div>
                 <div class="chatContent">
@@ -231,5 +73,39 @@
             </div>
         </div>
     </div>
+    {{!-- MODALI --}}
+    <div id="addFriendModal" class="backdrop">
+        <div class="modal">
+            <div class="ModalContent">
+                <h1>Add a friend</h1>
+                <input autocomplete="off" type="text" id="addFriendSearchbox" class="modalSearchBox" placeholder="Search for a user...">
+                <h2 id="noUsersFoundSearch">No users found.</h2>
+                <div class="availableUsers">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="newChatModal" class="backdrop">
+        <div class="modal">
+            <div class="ModalContent">
+                <h1>New message</h1>
+                <input autocomplete="off" type="text" id="newChatSearchbox" class="modalSearchBox" placeholder="Search for a comrade...">
+                <span class="selectedUsersNumberSpan">
+                    <p id="selectedUsersNumber">
+                        Selected users: 0
+                    </p>
+                </span>
+                <h2 style="display: none;" id="noUsersFoundSearchNewChat">No users found.</h2>
+                <div class="availableUsers" id="availableUsersNewChat">
+
+                </div>
+                <input type="text" placeholder="Type a message..." class="modalMessageBox" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/85404227e2.js" crossorigin="anonymous"></script>
+    <script src="./js/index.js"></script>
 </body>
 </html>

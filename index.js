@@ -28,7 +28,11 @@ const userApiRoute = require('./routes/api/users')
 app.use('/users/api', userApiRoute)
 
 app.get('/', requestLogin,  (req,res)=>{
-    res.render('index', req.session.user)
+    const payload = {
+        loggedUser: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user)
+    }
+    res.render('index', payload)
 })
 
 app.listen(PORT, ()=>{

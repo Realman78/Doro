@@ -1,3 +1,4 @@
+const { ObjectId } = require('bson');
 const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
@@ -6,11 +7,12 @@ const UserSchema = new Schema({
     username: { type: String, required: true, trim: true, unique: true},
     email: { type: String, required: true, trim: true, unique: true},
     password: { type: String, required: true},
-    profilePic: { type: String, default: `https://avatars.dicebear.com/api/bottts/${makeid(16)}.svg`},
+    comrades: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    profilePic: { type: String, default: `https://avatars.dicebear.com/api/bottts/${generateRandomDicebear(16)}.svg`},
     coverPhoto: { type: String}
 }, { timestamps: true })
 
-function makeid(length) {
+function generateRandomDicebear(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;

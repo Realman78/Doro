@@ -39,7 +39,7 @@ registerButton.addEventListener('click', async (e)=>{
         document.getElementById('errorMessageId').textContent = data.error
         return;
     }else{
-        history.replaceState('/')
+        window.location.href = '/'
     }
     
 })
