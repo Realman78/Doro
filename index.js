@@ -24,8 +24,10 @@ app.use('/register', registerRoute)
 app.use('/login', loginRouter)
 
 const userApiRoute = require('./routes/api/users')
+const chatApiRoute = require('./routes/api/chats')
 
 app.use('/users/api', userApiRoute)
+app.use('/chats/api', chatApiRoute)
 
 app.get('/', requestLogin,  (req,res)=>{
     const payload = {

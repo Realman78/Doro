@@ -17,6 +17,7 @@
             <div class="leftSide">
                 <div class="newMessageSection">
                     <button id="addFriendButton">+ Add friend</button>
+                    <button id="pendingRequestsButton">Pending requests</button>
                 </div>
                 
                 <div class="chatsSection">
@@ -26,7 +27,7 @@
                     </div>
                     <div class="chats">
                         <ul class="chatList">
-                            <li class="chatPreview">
+                            {{!-- <li class="chatPreview">
                                 <div class="chatPreviewProfilePicture">
                                     <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
                                 </div>
@@ -34,7 +35,7 @@
                                     <p>Name Today</p>
                                     <p>Message</p>
                                 </div>
-                            </li>
+                            </li> --}}
                         </ul>
                         
                     </div>
@@ -44,31 +45,33 @@
                     <p>Settings</p>
                 </div>
             </div>
-            <div class="messagingSection">
-                <div class="chatHeader">
-                    <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
-                    <h1>Name</h1>
-                </div>
-                <div class="chatContent">
-                    <ul>
-                        <li class="message">
-                            <span class="mine">
-                                <h2>This is my message</h2>
-                            </span>
-                        </li>
-                        <li class="message">
-                            <span class="others">
-                                <h2>This is their message</h2>
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="sendSection">
-                    <button id="stickerButton" class="sendSectionButton">Stkr</button>
-                    <button id="fileButton" class="sendSectionButton">File</button>
-                    <button id="gifButton" class="sendSectionButton">GIF</button>
-                    <input type="text" id="messageContentInput" placeholder="Type a message...">
-                    <button id="sendMessageButton" class="sendSectionButton">Send</button>
+            <div class="contentSection">
+                <div class="messagingSection">
+                    <div class="chatHeader">
+                        <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
+                        <h1>Name</h1>
+                    </div>
+                    <div class="chatContent">
+                        <ul>
+                            <li class="message">
+                                <span class="mine">
+                                    <h2>This is my message</h2>
+                                </span>
+                            </li>
+                            <li class="message">
+                                <span class="others">
+                                    <h2>This is their message</h2>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="sendSection">
+                        <button id="stickerButton" class="sendSectionButton">Stkr</button>
+                        <button id="fileButton" class="sendSectionButton">File</button>
+                        <button id="gifButton" class="sendSectionButton">GIF</button>
+                        <input type="text" id="messageContentInput" placeholder="Type a message...">
+                        <button id="sendMessageButton" class="sendSectionButton">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,7 +103,12 @@
                 <div class="availableUsers" id="availableUsersNewChat">
 
                 </div>
-                <input type="text" placeholder="Type a message..." class="modalMessageBox" style="display: none;">
+                <div class="sendSectionModal" style="display: none;">
+                    <input type="text" placeholder="Type a message to greet everyone..." class="modalMessageBox">
+                    <button class="sendMessageButton">
+                        Create
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -33,7 +33,7 @@
 //     }
 // })
 
-
+const chatList = document.querySelector('.chatList')
 const addFriendButton = document.getElementById('addFriendButton')
 const addFriendModal = document.getElementById('addFriendModal')
 const newChatModal = document.getElementById('newChatModal')
@@ -41,6 +41,8 @@ const addFriendSearchbox = document.getElementById('addFriendSearchbox')
 const newChatSearchbox = document.getElementById('newChatSearchbox')
 const availableUsersDiv = document.querySelector('.availableUsers')
 const modalMessageBox = document.querySelector('.modalMessageBox')
+const sendSectionModal = document.querySelector('.sendSectionModal')
+const sendMessageButton = document.querySelector('.sendMessageButton')
 const noUsersFoundSearch = document.getElementById('noUsersFoundSearch')
 const newMessageButton = document.getElementById('newMessageButton')
 const availableUsersNewChat = document.getElementById('availableUsersNewChat')
@@ -49,6 +51,46 @@ const selectedUsersNumberP = document.getElementById('selectedUsersNumber')
 
 let selectedUsersNumber = 0
 let selectedUsers = []
+
+window.onload = async ()=>{
+    const res = await fetch('/chats/api')
+    const data = await res.json()
+    for (let chat of data){
+        createChatPreview(chat)
+    }
+}
+
+const createChatPreview = (chat)=>{
+    let imgSrc = ""
+    let otherUser = null
+    let chatName = ""
+    let latestMessageSender = ""
+    let latestMessageDate = new Date(chat.updatedAt)
+    latestMessageDate = `${latestMessageDate.getDate()}/${latestMessageDate.getMonth()+1}/${latestMessageDate.getFullYear()}`
+    console.log(latestMessageDate)
+    if (!chat.isGroupChat){
+        otherUser = chat.users[0]._id == userLoggedIn._id ? chat.users[1] : chat.users[0] 
+        imgSrc = otherUser.profilePic
+        chatName = otherUser.username
+    }else{
+        imgSrc = 'https://cdn3.iconfinder.com/data/icons/speech-bubble-2/100/Group-512.png'
+        chatName = generateChatName(chat.users)
+    }
+    latestMessageSender = chat.latestMessage.sender._id == userLoggedIn._id ? "You" : chat.latestMessage.sender.username
+    let html = `<li class="chatPreview">
+                    <div class="chatPreviewProfilePicture">
+                        <img src="${imgSrc}" alt="Profile Picture">
+                    </div>
+                    <div class="chatPreviewContent">
+                        <div class="chatPreviewUandD">
+                            <p class="usernameChatPreview ellipsis">${chatName}</p>
+                            <p class="dateChatPreview">${latestMessageDate}</p>
+                        </div>
+                        <p class="latestMessageChatPreview ellipsis">${latestMessageSender}: ${chat.latestMessage.content}</p>
+                    </div>
+                </li>`
+    chatList.innerHTML += html
+}
 
 addFriendModal.addEventListener('click', (e)=>{
     if (e.target === addFriendModal){
@@ -191,7 +233,7 @@ newChatModal.addEventListener('click', (e)=>{
         selectedUsers = []
         selectedUsersNumberP.textContent = `Selected users: ${selectedUsersNumber}`
         newChatSearchbox.value = ''
-        modalMessageBox.style.display = 'none'
+        sendSectionModal.style.display = 'none'
         return;
     }
 })
@@ -205,13 +247,18 @@ newMessageButton.addEventListener('click',(e)=>{
     }
     newChatUserClickHandler()
 })
+modalMessageBox.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter' && e.target.value.length > 0)
+        newMessageFromModalHandler(e)
+})
+sendMessageButton.addEventListener('click', newMessageFromModalHandler)
 
 function newChatUserClickHandler(){
     document.querySelectorAll('.userPreview').forEach(div=>{
         div.addEventListener('click', e=>{
             const selectedUserId = e.target.attributes['data-id'].value.toString()
             const containsUser = selectedUsers.findIndex(user=>user===selectedUserId)
-            if (containsUser == -1){
+            if (containsUser == -1 && selectedUsersNumber < 25){
                 e.target.classList.add('selectedUserPreview')
                 selectedUsers.push(selectedUserId)
                 selectedUsersNumber++;
@@ -223,8 +270,49 @@ function newChatUserClickHandler(){
                 selectedUsersNumber--;
                 e.target.getElementsByTagName('button')[0].innerHTML = `<i class="far fa-square"></i>`
             }
-            modalMessageBox.style.display = selectedUsersNumber > 0 ? "block" : "none"
+            sendSectionModal.style.display = selectedUsersNumber > 0 ? "flex" : "none"
             selectedUsersNumberP.textContent = `Selected users: ${selectedUsersNumber}`
         })
     })
+}
+
+async function newMessageFromModalHandler(e){
+    if (modalMessageBox.value.length < 1) return
+    const message = modalMessageBox.value.trim()
+    let chatName = ""
+    selectedUsers.push(userLoggedIn._id)
+    for (let comrade of userLoggedIn.comrades){
+        if (selectedUsers.includes(comrade._id)){
+            chatName += (", " + comrade.username)
+        }
+    }
+    chatName = chatName.substr(2)
+    const body = JSON.stringify({
+        users: uniq(selectedUsers),
+        latestMessage: message
+    })
+    const res = await fetch('/chats/api/create', {
+        method: "POST",
+        body,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    const data = await res.json()
+    if (data.error){
+        alert('You already have that chat')
+    }else location.reload()
+}
+
+function generateChatName(users){
+    let chatName = ""
+    for (let comrade of users){
+        chatName += (", " + comrade.username)
+    }
+    return chatName.substr(2)
+}
+function uniq(a) {
+    return a.sort().filter(function(item, pos, ary) {
+        return !pos || item != ary[pos - 1];
+    });
 }
