@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="contentSection">
-                <div class="messagingSection">
+                <div style="display: none;" class="messagingSection">
                     <div class="chatHeader">
                         <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
                         <h1>Name</h1>
@@ -71,6 +71,18 @@
                         <button id="gifButton" class="sendSectionButton">GIF</button>
                         <input type="text" id="messageContentInput" placeholder="Type a message...">
                         <button id="sendMessageButton" class="sendSectionButton">Send</button>
+                    </div>
+                </div>
+
+                <div class="messagingSection" id="pendingRequestsSection">
+                    <div class="chatHeader" id="pendingRequestsHeader">
+                        <h1>Pending Requests</h1>
+                    </div>
+                    <div class="chatContent" >
+                        
+                    </div>
+                    <div class="sendSection">
+                        <h2>Doro</h2>
                     </div>
                 </div>
             </div>

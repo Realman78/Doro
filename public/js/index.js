@@ -109,7 +109,8 @@ newChatSearchbox.addEventListener('keyup', searchBoxListener.bind(this, "new-cha
 
 function searchBoxListener(type, e){
     if (typingTimer) clearTimeout(typingTimer)
-    typingTimer = setTimeout(()=>{
+    typingTimer = setTimeout(async ()=>{
+        userLoggedIn = await renewUser()
         if(e.target.value.length > 0 || type === 'new-chat')
             getUsersByUsername(e.target.value, type)
         else{
@@ -160,9 +161,17 @@ const getUsersByUsername = async (username, type = null)=>{
 
     document.querySelectorAll('.addFriendButton').forEach(btn=>{
         btn.addEventListener('click', async (e)=>{
-            const selectedUserId = e.target.parentNode.attributes["data-id"].value.toString()
+            const selectedUserId = e.target.parentNode.parentNode.attributes["data-id"].value.toString()
+            let accepted = "false"
+
+            if (document.getElementById('refuse')){
+                document.getElementById('refuse').remove()
+                if (e.target.id !== "refuse")
+                    accepted = "true"
+            }
             const body = JSON.stringify({
-                userId: selectedUserId
+                userId: selectedUserId,
+                accepted
             })
             const res = await fetch('/users/api/friends/modify', {
                 method: "PUT",
@@ -173,34 +182,80 @@ const getUsersByUsername = async (username, type = null)=>{
                 }
             })
             const data = await res.json()
+            console.log(data)
+            if (data.error){
+                userLoggedIn = await renewUser()
+                getUsersByUsername(username, null)
+                return alert(data.error)
+            }
             userLoggedIn = data
             if (data){
+                
+
+                action = `<i class="fas fa-user-plus"></i>`
+                let otherButton = null
                 let isComrade = false;
                 for (let cUser of userLoggedIn.comrades){
                     if (cUser._id.toString() === selectedUserId){
-                        isComrade = true
+                        action = `<i class="fas fa-user-check"></i>`
+                        isComrade = true;
                         break;
                     }
                 }
-                action = isComrade ? `<i class="fas fa-user-check"></i>` : `<i class="fas fa-user-plus"></i>`
-                e.target.innerHTML = action
+                if (!isComrade){
+                    for (let cRequest of userLoggedIn.comradeRequests){
+                        if (cRequest.requestor === userLoggedIn._id){
+                            action = `<i class="fas fa-user-clock"></i>`
+                            break;
+                        }
+                        if (cRequest.recipient === userLoggedIn._id){
+                            action = `<i class="fas fa-check-circle"></i>`
+                            otherButton = document.createElement('button')
+                            otherButton.id = "refuse"
+                            otherButton.className = "addFriendButton"
+                            otherButton.innerHTML = `<i class="fas fa-times-circle"></i>`
+                            e.target.parentNode.append(otherButton)
+                            break;
+                        }
+                    }
+                }
+                console.log(e)
+                if (e.target.id === "refuse"){
+                    e.path[1].querySelector('.addFriendButton').innerHTML = action
+                }else{
+                    e.target.innerHTML = action
+                }
             }
         })
     })
 }
 const createUserPreview = (user, type)=>{
-    let action, classes = "", classes2 = ""
+    let action, classes = "", classes2 = "", otherButton = ""
     switch(type){
         case null:
+            action = `<i class="fas fa-user-plus"></i>`
+            classes="addFriendButton"
             let isComrade = false;
             for (let cUser of userLoggedIn.comrades){
                 if (cUser._id.toString() === user._id){
-                    isComrade = true
+                    action = `<i class="fas fa-user-check"></i>`
+                    isComrade = true;
                     break;
                 }
             }
-            action = isComrade ? `<i class="fas fa-user-check"></i>` : `<i class="fas fa-user-plus"></i>`
-            classes="addFriendButton"
+            if (!isComrade){
+                for (let cRequest of userLoggedIn.comradeRequests){
+                    if (cRequest.requestor === userLoggedIn._id){
+                        action = `<i class="fas fa-user-clock"></i>`
+                        break;
+                    }
+                    if (cRequest.recipient === userLoggedIn._id){
+                        action = `<i class="fas fa-check-circle"></i>`
+                        otherButton = `<button id="refuse" class="${classes}"><i class="fas fa-times-circle"></i></button>`
+                        break;
+                    }
+                }
+            }
             break;
         case 'new-chat':
             if (selectedUsers.includes(user._id)){
@@ -216,7 +271,10 @@ const createUserPreview = (user, type)=>{
                 <img src="${user.profilePic}" alt="ProfilePic">
                 <h3 class="ellipsis">${user.username}</h3>
             </div>
-            <button class="${classes}">${action}</button>
+            <div class="buttonContainer">
+                <button class="${classes}">${action}</button>
+                ${otherButton}
+            </div>
         </div>`
     if(!type){
         availableUsersDiv.innerHTML += html
@@ -315,4 +373,10 @@ function uniq(a) {
     return a.sort().filter(function(item, pos, ary) {
         return !pos || item != ary[pos - 1];
     });
+}
+
+const renewUser = async ()=>{
+    const res = await fetch('/users/api/me')
+    const user = await res.json()
+    return user
 }

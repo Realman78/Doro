@@ -1,4 +1,3 @@
-const { ObjectId } = require('bson');
 const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
@@ -8,6 +7,7 @@ const UserSchema = new Schema({
     email: { type: String, required: true, trim: true, unique: true},
     password: { type: String, required: true},
     comrades: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    comradeRequests: [{ type: Schema.Types.ObjectId, ref: 'ComradeRequest' }],
     profilePic: { type: String, default: `https://avatars.dicebear.com/api/bottts/${generateRandomDicebear(16)}.svg`},
     coverPhoto: { type: String}
 }, { timestamps: true })

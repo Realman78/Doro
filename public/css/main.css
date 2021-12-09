@@ -236,7 +236,7 @@ a:hover {
 }
 .addFriendButton{
     min-width: 24px;
-    /* height: 50%; */
+    height: 100%;
     background-color: #b5d9f7;
     padding: 0px 12px;
     font-size: 1rem;
@@ -248,7 +248,7 @@ a:hover {
 }
 .addFriendToChatButton{
     min-width: 24px;
-    /* height: 50%; */
+    height: 100%;
     background-color: #b5d9f7;
     padding: 0px 12px;
     font-size: 1rem;
@@ -321,3 +321,4 @@ a:hover {
     margin-left: 2%;
     width: 100%;
 }
+.buttonContainer{height: auto;min-width: 24px;/* width: 10%; */}

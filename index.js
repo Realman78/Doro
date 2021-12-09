@@ -19,9 +19,11 @@ app.use(express.json())
 
 const registerRoute = require('./routes/registerRouter')
 const loginRouter = require('./routes/loginRouter')
+const logoutRouter = require('./routes/logout')
 
 app.use('/register', registerRoute)
 app.use('/login', loginRouter)
+app.use('/logout', logoutRouter)
 
 const userApiRoute = require('./routes/api/users')
 const chatApiRoute = require('./routes/api/chats')
