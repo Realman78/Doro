@@ -17,7 +17,7 @@
             <div class="leftSide">
                 <div class="newMessageSection">
                     <button id="addFriendButton">+ Add friend</button>
-                    <button id="pendingRequestsButton">Pending requests</button>
+                    <button id="pendingRequestsButton">Comrades</button>
                 </div>
                 
                 <div class="chatsSection">
@@ -42,11 +42,11 @@
                 </div>
                 <div class="profileSettings">
                     <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
-                    <p>Settings</p>
+                    <button id="logoutButton">Logout</button>
                 </div>
             </div>
             <div class="contentSection">
-                <div style="display: none;" class="messagingSection">
+                <div style="display: none;" class="messagingSection" id="messagingSectionId">
                     <div class="chatHeader">
                         <img src="{{loggedUser.profilePic}}" alt="Profile Picture">
                         <h1>Name</h1>
@@ -76,13 +76,18 @@
 
                 <div class="messagingSection" id="pendingRequestsSection">
                     <div class="chatHeader" id="pendingRequestsHeader">
-                        <h1>Pending Requests</h1>
+                        <header>Comrade Dashboard</header>
                     </div>
-                    <div class="chatContent" >
-                        
+                    <h2>Pending</h2>
+                    <div class="pendingRequests">
+
                     </div>
-                    <div class="sendSection">
-                        <h2>Doro</h2>
+                    <h2>Comrades</h2>
+                    <div class="comradeList">
+
+                    </div>
+                    <div class="comradesFooter">
+
                     </div>
                 </div>
             </div>

@@ -14,10 +14,14 @@ router.get('/me', async (req,res)=>{
     req.session.user = await (await User.findById(req.session.user._id).populate("comrades")).populate("comradeRequests")
     res.send(req.session.user)
 })
+router.get('/friends/requests', async (req,res)=>{
+    let comradeRequests = await ComradeRequest.find({recipient: req.session.user._id}).catch((e)=>console.log(e))
+    comradeRequests = await ComradeRequest.populate(comradeRequests, {path: 'requestor'})
+    res.send(comradeRequests)
+})
 
 router.put('/friends/modify', async (req,res)=>{
     if (!req.body.userId) return res.sendStatus(400)
-    console.log(req.body)
     for (let user of req.session.user.comrades){
         if (user._id === req.body.userId){
             req.session.user = await User.findByIdAndUpdate(req.session.user._id,{ $pull : {comrades: req.body.userId}}, {new: true}).populate('comrades')
@@ -36,14 +40,11 @@ router.put('/friends/modify', async (req,res)=>{
         await User.updateMany({$or: [{_id: deletedRequest.requestor}, {_id: deletedRequest.recipient}]}, {$pull: {comradeRequests: deletedRequest._id}}, {new: true})
         req.session.user = await (await User.findById(req.session.user._id).populate("comrades")).populate("comradeRequests")
         if (deletedRequest.requestor.toString() !== req.session.user._id && req.body.accepted === "true"){
-            console.log('ako ovo vidis reci duju da je idiot')
-            req.session.user =await (await User.findByIdAndUpdate(req.session.user._id, {$addToSet: {comrades: req.body.userId}}, {new: true})).populate("comrades")
             await User.findByIdAndUpdate(req.body.userId, {$addToSet: {comrades: req.session.user._id}})
+            req.session.user = await (await (await User.findByIdAndUpdate(req.session.user._id, {$addToSet: {comrades: req.body.userId}}, {new: true})).populate("comrades")).populate("comradeRequests")
         }
-        console.log(req.session.user)
         return res.send(req.session.user)
     }
-    console.log('ok')
     const body = {
         requestor: req.session.user._id,
         recipient: req.body.userId

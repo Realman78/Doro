@@ -48,17 +48,43 @@ const newMessageButton = document.getElementById('newMessageButton')
 const availableUsersNewChat = document.getElementById('availableUsersNewChat')
 const noUsersFoundSearchNewChat = document.getElementById('noUsersFoundSearchNewChat')
 const selectedUsersNumberP = document.getElementById('selectedUsersNumber')
+const messagingSection = document.getElementById('messagingSectionId')
+const pendingRequestsSection = document.getElementById('pendingRequestsSection')
+const pendingRequestsButton = document.getElementById('pendingRequestsButton')
+const pendingRequests = document.querySelector('.pendingRequests')
+const comradeList = document.querySelector('.comradeList')
+const comradesFooter = document.querySelector('.comradesFooter')
+
+const logoutButton = document.getElementById('logoutButton')
+logoutButton.addEventListener('click', (e)=>{
+    fetch('/logout').then(res=>location.reload())
+})
 
 let selectedUsersNumber = 0
 let selectedUsers = []
 
 window.onload = async ()=>{
+    userLoggedIn = await renewUser()
     const res = await fetch('/chats/api')
-    const data = await res.json()
-    for (let chat of data){
+    const chats = await res.json()
+    for (let chat of chats){
         createChatPreview(chat)
     }
+    const res1 = await fetch('/users/api/friends/requests')
+    const requests = await res1.json()
+    for (let comradeRequest of requests){
+        createUserPreview(comradeRequest.requestor, null, pendingRequests)
+    }
+    for (let comrade of userLoggedIn.comrades){
+        createUserPreview(comrade, null, comradeList)
+    }    
+    
 }
+
+pendingRequestsButton.addEventListener('click', e=>{
+    messagingSection.style.display = "none"
+    pendingRequestsSection.style.display = "flex"
+})
 
 const createChatPreview = (chat)=>{
     let imgSrc = ""
@@ -67,7 +93,6 @@ const createChatPreview = (chat)=>{
     let latestMessageSender = ""
     let latestMessageDate = new Date(chat.updatedAt)
     latestMessageDate = `${latestMessageDate.getDate()}/${latestMessageDate.getMonth()+1}/${latestMessageDate.getFullYear()}`
-    console.log(latestMessageDate)
     if (!chat.isGroupChat){
         otherUser = chat.users[0]._id == userLoggedIn._id ? chat.users[1] : chat.users[0] 
         imgSrc = otherUser.profilePic
@@ -159,77 +184,9 @@ const getUsersByUsername = async (username, type = null)=>{
         return
     }
 
-    document.querySelectorAll('.addFriendButton').forEach(btn=>{
-        btn.addEventListener('click', async (e)=>{
-            const selectedUserId = e.target.parentNode.parentNode.attributes["data-id"].value.toString()
-            let accepted = "false"
-
-            if (document.getElementById('refuse')){
-                document.getElementById('refuse').remove()
-                if (e.target.id !== "refuse")
-                    accepted = "true"
-            }
-            const body = JSON.stringify({
-                userId: selectedUserId,
-                accepted
-            })
-            const res = await fetch('/users/api/friends/modify', {
-                method: "PUT",
-                body,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
-            const data = await res.json()
-            console.log(data)
-            if (data.error){
-                userLoggedIn = await renewUser()
-                getUsersByUsername(username, null)
-                return alert(data.error)
-            }
-            userLoggedIn = data
-            if (data){
-                
-
-                action = `<i class="fas fa-user-plus"></i>`
-                let otherButton = null
-                let isComrade = false;
-                for (let cUser of userLoggedIn.comrades){
-                    if (cUser._id.toString() === selectedUserId){
-                        action = `<i class="fas fa-user-check"></i>`
-                        isComrade = true;
-                        break;
-                    }
-                }
-                if (!isComrade){
-                    for (let cRequest of userLoggedIn.comradeRequests){
-                        if (cRequest.requestor === userLoggedIn._id){
-                            action = `<i class="fas fa-user-clock"></i>`
-                            break;
-                        }
-                        if (cRequest.recipient === userLoggedIn._id){
-                            action = `<i class="fas fa-check-circle"></i>`
-                            otherButton = document.createElement('button')
-                            otherButton.id = "refuse"
-                            otherButton.className = "addFriendButton"
-                            otherButton.innerHTML = `<i class="fas fa-times-circle"></i>`
-                            e.target.parentNode.append(otherButton)
-                            break;
-                        }
-                    }
-                }
-                console.log(e)
-                if (e.target.id === "refuse"){
-                    e.path[1].querySelector('.addFriendButton').innerHTML = action
-                }else{
-                    e.target.innerHTML = action
-                }
-            }
-        })
-    })
+    createButtonsListener(username)
 }
-const createUserPreview = (user, type)=>{
+const createUserPreview = (user, type, container=availableUsersDiv)=>{
     let action, classes = "", classes2 = "", otherButton = ""
     switch(type){
         case null:
@@ -238,18 +195,19 @@ const createUserPreview = (user, type)=>{
             let isComrade = false;
             for (let cUser of userLoggedIn.comrades){
                 if (cUser._id.toString() === user._id){
-                    action = `<i class="fas fa-user-check"></i>`
+                    action = container === comradeList ? `<i class="fas fa-inbox"></i>` : `<i class="fas fa-user-check"></i>`
+                    classes += container === comradeList ? " messageButton" : ""
                     isComrade = true;
                     break;
                 }
             }
             if (!isComrade){
                 for (let cRequest of userLoggedIn.comradeRequests){
-                    if (cRequest.requestor === userLoggedIn._id){
+                    if (cRequest.requestor === userLoggedIn._id && cRequest.recipient === user._id){
                         action = `<i class="fas fa-user-clock"></i>`
                         break;
                     }
-                    if (cRequest.recipient === userLoggedIn._id){
+                    if (cRequest.recipient === userLoggedIn._id && cRequest.requestor === user._id){
                         action = `<i class="fas fa-check-circle"></i>`
                         otherButton = `<button id="refuse" class="${classes}"><i class="fas fa-times-circle"></i></button>`
                         break;
@@ -277,7 +235,10 @@ const createUserPreview = (user, type)=>{
             </div>
         </div>`
     if(!type){
-        availableUsersDiv.innerHTML += html
+        container.innerHTML += html
+        if (container === pendingRequests || container === comradeList){
+            createButtonsListener(null, true, container)
+        }
     }else if(type == 'new-chat'){
         availableUsersNewChat.innerHTML += html
     }
@@ -379,4 +340,97 @@ const renewUser = async ()=>{
     const res = await fetch('/users/api/me')
     const user = await res.json()
     return user
+}
+function createButtonsListener(username, inPending = false, container=document){
+    container.querySelectorAll('button.addFriendButton').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+            const temp = await renewUser()
+            if (JSON.stringify(userLoggedIn) != JSON.stringify(temp)) {
+                alert('Something went wrong.')
+                if (container !== document) location.reload()
+                getUsersByUsername(username, null)
+                userLoggedIn = temp
+                return 
+            }
+            const selectedUserId = e.target.parentNode.parentNode.attributes["data-id"].value.toString()
+            let accepted = "false"
+            if (e.target.className.includes("messageButton")){
+                return alert('nova poruka s ovin likon daje?')
+            }
+            if (e.target.parentNode.querySelector('#refuse') !== null){
+                e.target.parentNode.querySelector('#refuse').remove()
+                if (e.target.id !== "refuse"){
+                    accepted = "true"
+                }
+            }
+            const body = JSON.stringify({
+                userId: selectedUserId,
+                accepted
+            })
+            const res = await fetch('/users/api/friends/modify', {
+                method: "PUT",
+                body,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            const data = await res.json()
+            console.log(data)
+            if (data.error){
+                userLoggedIn = await renewUser()
+                getUsersByUsername(username, null)
+                return alert(data.error)
+            }
+            userLoggedIn = data
+            if (data){
+                if (accepted === "true"){
+                    let tempComrade = userLoggedIn.comrades.find(comrade=>comrade._id.toString() === selectedUserId)
+                    createUserPreview(tempComrade, null, comradeList)
+                }
+
+                action = `<i class="fas fa-user-plus"></i>`
+                let otherButton = null
+                let isComrade = false;
+                for (let cUser of userLoggedIn.comrades){
+                    if (cUser._id.toString() === selectedUserId){
+                        action = `<i class="fas fa-user-check"></i>`
+                        isComrade = true;
+                        if (username === null && inPending){
+                            e.target.parentNode.parentNode.remove()
+                            return;
+                        }
+                        break;
+                    }
+                }
+                if (username === null && inPending && e.target.id === "refuse"){
+                    e.path[2].remove()
+                    return
+                }
+                if (!isComrade){
+                    for (let cRequest of userLoggedIn.comradeRequests){
+                        if (cRequest.requestor === userLoggedIn._id){
+                            action = `<i class="fas fa-user-clock"></i>`
+                            break;
+                        }
+                        if (cRequest.recipient === userLoggedIn._id){
+                            action = `<i class="fas fa-check-circle"></i>`
+                            otherButton = document.createElement('button')
+                            otherButton.id = "refuse"
+                            otherButton.className = "addFriendButton"
+                            otherButton.innerHTML = `<i class="fas fa-times-circle"></i>`
+                            e.target.parentNode.append(otherButton)
+                            break;
+                        }
+                    }
+                }
+                console.log(e)
+                if (e.target.id === "refuse"){
+                    e.path[1].querySelector('.addFriendButton').innerHTML = action
+                }else{
+                    e.target.innerHTML = action
+                }
+            }
+        })
+    })
 }
