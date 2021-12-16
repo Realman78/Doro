@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const User = require('../../schemas/UserSchema')
 const Chat = require('../../schemas/ChatSchema')
-const Message = require('../../schemas/MessageSChema')
+const Message = require('../../schemas/MessageSchema')
 
 router.get('/', async (req,res)=>{
     let chats = await Chat.find({users: { $elemMatch: {$eq: req.session.user._id} }})
@@ -38,5 +38,16 @@ router.post('/create', async (req,res)=>{
         return res.send(chat)
     }
 })
-
+router.get('/:chatId', async (req,res)=>{
+    const chats = await Chat.findOne({ _id: req.params.chatId,users: { $elemMatch: {$eq: req.session.user._id} }})
+    .populate("users")
+    .catch((e)=>console.log(e))
+    res.send(chats)
+}) 
+router.get('/:chatId/messages', async (req,res)=>{
+    const chats = await Message.find({chat: req.params.chatId})
+    .populate("sender")
+    .catch((e)=>console.log(e))
+    res.send(chats)
+})
 module.exports = router

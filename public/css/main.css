@@ -112,19 +112,45 @@ a:hover {
     justify-content: flex-start;
 }
 .sendSection{
-    width: 100%;
+    width: 99%;
     height: 5%;
+    min-height: 5%;
+    max-height: 34%;
     display: flex;
     align-items: center;
     justify-content: space-around;
+    /* padding: 0px 1%; */
+    background-color: #a0a0bd;
+    border-radius: 18px;
+    position: relative;
+    bottom: 1%;
 }
-.sendSection input{
-    width: 88%;
-    height: 50%;
-    border-radius: 12px;
-    border: 1px solid black;
-    font-size: 1rem;
-    padding: 4px;
+.sendSection #dajeee{
+    display: flex;
+    width: 85%;
+    max-width: 59vw;
+    height: auto;
+    border: none;
+    font-size: 1.2rem;
+    background: inherit;
+    color: white;
+    resize: none;
+    align-items: center;
+    justify-content: center;
+}
+#messageContentInput{
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+    /* max-width: 62%; */
+    max-height: 32vh;
+    vertical-align: middle;
+    /* max-width: 10vw; */
+    /* max-height: 41px; */
+}
+.sendSection textarea::placeholder{
+    color: white;
+    opacity: 1;
 }
 .searchSection{
     width: 100%;
@@ -134,7 +160,17 @@ a:hover {
     margin-bottom: 1%;
 }
 .sendSectionButton{
-    font-size: small;
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    padding: .5%;
+    border-radius: 8px;
+    cursor: pointer;
+    /* position: relative; */
+    /* bottom: 0px; */
+}
+.sendSectionButton:hover{
+    background-color: red;
 }
 #chatSearchbox{
     width: 80%;
@@ -149,6 +185,10 @@ a:hover {
     align-items: center;
     border-bottom: 1px solid black;
     cursor: pointer;
+}
+.chatPreview > *{
+    pointer-events: none;
+    user-select: none;
 }
 .chatPreview:hover,
 .userPreview:hover{
@@ -285,6 +325,10 @@ a:hover {
 .selectedUserPreview:hover{
     background-color: rgb(41, 235, 215);
 }
+.chatSection{
+    width: 100%;
+    height: 100%;
+}
 .modalMessageBox{
     width: 90%;
     margin-top: 4%;
@@ -329,4 +373,13 @@ a:hover {
 
 }
 .comradesFooter{
+}
+.pendingRequestsSectionClass{
+
+display: flex;
+
+flex-direction: column;
+}
+.messages{
+    
 }

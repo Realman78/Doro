@@ -27,9 +27,11 @@ app.use('/logout', logoutRouter)
 
 const userApiRoute = require('./routes/api/users')
 const chatApiRoute = require('./routes/api/chats')
+const messageApiRoute = require('./routes/api/messages')
 
 app.use('/users/api', userApiRoute)
 app.use('/chats/api', chatApiRoute)
+app.use('/messages/api', messageApiRoute)
 
 app.get('/', requestLogin,  (req,res)=>{
     const payload = {

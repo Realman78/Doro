@@ -42,7 +42,8 @@ const newChatSearchbox = document.getElementById('newChatSearchbox')
 const availableUsersDiv = document.querySelector('.availableUsers')
 const modalMessageBox = document.querySelector('.modalMessageBox')
 const sendSectionModal = document.querySelector('.sendSectionModal')
-const sendMessageButton = document.querySelector('.sendMessageButton')
+const sendMessageButtonModal = document.querySelector('.sendMessageButton')
+const sendSection = document.querySelector('.sendSection')
 const noUsersFoundSearch = document.getElementById('noUsersFoundSearch')
 const newMessageButton = document.getElementById('newMessageButton')
 const availableUsersNewChat = document.getElementById('availableUsersNewChat')
@@ -54,6 +55,20 @@ const pendingRequestsButton = document.getElementById('pendingRequestsButton')
 const pendingRequests = document.querySelector('.pendingRequests')
 const comradeList = document.querySelector('.comradeList')
 const comradesFooter = document.querySelector('.comradesFooter')
+const chatSection = document.querySelector('.chatSection')
+const chatPhotoImage = document.getElementById('chatPhoto')
+const chatNameHeader = document.getElementById('chatName')
+const messagesList = document.querySelector('.messages')
+const messageInput = document.getElementById('messageContentInput')
+const sendMessageButton = document.getElementById('sendMessageButton')
+
+window.addEventListener('resize', (e)=>{
+    var event = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+    });
+    messageInput.dispatchEvent(event)
+});
 
 const logoutButton = document.getElementById('logoutButton')
 logoutButton.addEventListener('click', (e)=>{
@@ -62,6 +77,7 @@ logoutButton.addEventListener('click', (e)=>{
 
 let selectedUsersNumber = 0
 let selectedUsers = []
+let GchatId = ""
 
 window.onload = async ()=>{
     userLoggedIn = await renewUser()
@@ -70,6 +86,7 @@ window.onload = async ()=>{
     for (let chat of chats){
         createChatPreview(chat)
     }
+    createChatClickListener(chats)
     const res1 = await fetch('/users/api/friends/requests')
     const requests = await res1.json()
     for (let comradeRequest of requests){
@@ -82,8 +99,7 @@ window.onload = async ()=>{
 }
 
 pendingRequestsButton.addEventListener('click', e=>{
-    messagingSection.style.display = "none"
-    pendingRequestsSection.style.display = "flex"
+    toggleMainContent(false, null, null)
 })
 
 const createChatPreview = (chat)=>{
@@ -102,7 +118,7 @@ const createChatPreview = (chat)=>{
         chatName = generateChatName(chat.users)
     }
     latestMessageSender = chat.latestMessage.sender._id == userLoggedIn._id ? "You" : chat.latestMessage.sender.username
-    let html = `<li class="chatPreview">
+    let html = `<li class="chatPreview" data-id="${chat._id}">
                     <div class="chatPreviewProfilePicture">
                         <img src="${imgSrc}" alt="Profile Picture">
                     </div>
@@ -114,7 +130,26 @@ const createChatPreview = (chat)=>{
                         <p class="latestMessageChatPreview ellipsis">${latestMessageSender}: ${chat.latestMessage.content}</p>
                     </div>
                 </li>`
-    chatList.innerHTML += html
+    chatList.innerHTML += html   
+}
+function createChatClickListener(chats){
+    chatList.querySelectorAll('.chatPreview').forEach(chatPreview=>{
+        chatPreview.addEventListener('click', e=>{
+            toggleMainContent(true,  e.target.attributes['data-id'].value.toString(), chats)
+        })
+    })
+}
+
+function toggleMainContent(openMessages, chatId, chats){
+    messagingSection.style.display = openMessages ? "flex" : "none";
+    pendingRequestsSection.style.display = openMessages ? "none" : "flex";
+    if (GchatId === chatId) return;
+    GchatId = chatId
+    if (openMessages){
+        messagesList.innerHTML = ""
+        const selectedChat = chats.find(chat=>chatId === chat._id)
+        openChat(selectedChat._id)
+    }
 }
 
 addFriendModal.addEventListener('click', (e)=>{
@@ -270,7 +305,7 @@ modalMessageBox.addEventListener('keydown', (e)=>{
     if (e.key === 'Enter' && e.target.value.length > 0)
         newMessageFromModalHandler(e)
 })
-sendMessageButton.addEventListener('click', newMessageFromModalHandler)
+sendMessageButtonModal.addEventListener('click', newMessageFromModalHandler)
 
 function newChatUserClickHandler(){
     document.querySelectorAll('.userPreview').forEach(div=>{
