@@ -70,6 +70,7 @@
                     <div class="sendSection">
                         <button id="stickerButton" class="sendSectionButton"><i class="fas fa-sticky-note"></i></button>
                         <button id="fileButton" class="sendSectionButton"><i class="fas fa-file-image"></i></button>
+                        <input style="display: none;" id="uploadFile" type="file" multiple="multiple">
                         <button id="gifButton" class="sendSectionButton"><i class="fas fa-gift"></i></button>
                         <div id="dajeee">
                             <div id="messageContentInput"
@@ -77,8 +78,10 @@
                                 
                             </div>
                         </div>
-                        {{!-- <textarea id="messageContentInput" placeholder="Type a message..." rows="1"></textarea> --}}
                         <button id="sendMessageButton" class="sendSectionButton"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                    <div style="display: none;" class="stickerSelection">
+
                     </div>
                 </div>
 
@@ -133,6 +136,26 @@
                     <button class="sendMessageButton">
                         Create
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="attachmentsModal" class="backdrop">
+        <div class="modal">
+            <div class="ModalContent">
+                <div class="attachments">
+                    {{!-- <div class="attachment">
+                        <img src="https://images.unsplash.com/photo-1639657742894-f77323974ed0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="">
+                    </div> --}}
+                </div>
+                <div class="attachmentSendSection">
+                    <div id="dajeee" class="attachmentModalInputWrapper">
+                        <div
+                            contenteditable="true" class="modalInput">
+                        </div>
+                    </div>
+                    <button id="sendMessageButtonModal" class="sendSectionButton"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>

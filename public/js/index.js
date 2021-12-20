@@ -61,6 +61,13 @@ const chatNameHeader = document.getElementById('chatName')
 const messagesList = document.querySelector('.messages')
 const messageInput = document.getElementById('messageContentInput')
 const sendMessageButton = document.getElementById('sendMessageButton')
+const openFilesButton = document.getElementById('fileButton')
+const inputFile = document.getElementById('uploadFile');
+const attachmentsModal = document.getElementById('attachmentsModal');
+const attachmentsList = document.querySelector('.attachments')
+const modalInput = document.querySelector('.modalInput')
+const sendMessageButtonAttachmentModal = document.getElementById('sendMessageButtonModal')
+const chatContent = document.querySelector('.chatContent')
 
 window.addEventListener('resize', (e)=>{
     var event = new Event('input', {
@@ -81,12 +88,7 @@ let GchatId = ""
 
 window.onload = async ()=>{
     userLoggedIn = await renewUser()
-    const res = await fetch('/chats/api')
-    const chats = await res.json()
-    for (let chat of chats){
-        createChatPreview(chat)
-    }
-    createChatClickListener(chats)
+    await getChatPreviews()
     const res1 = await fetch('/users/api/friends/requests')
     const requests = await res1.json()
     for (let comradeRequest of requests){
@@ -118,6 +120,7 @@ const createChatPreview = (chat)=>{
         chatName = generateChatName(chat.users)
     }
     latestMessageSender = chat.latestMessage.sender._id == userLoggedIn._id ? "You" : chat.latestMessage.sender.username
+    const latestMessageContent = chat.latestMessage.attachment ? "File" : chat.latestMessage.content
     let html = `<li class="chatPreview" data-id="${chat._id}">
                     <div class="chatPreviewProfilePicture">
                         <img src="${imgSrc}" alt="Profile Picture">
@@ -127,11 +130,22 @@ const createChatPreview = (chat)=>{
                             <p class="usernameChatPreview ellipsis">${chatName}</p>
                             <p class="dateChatPreview">${latestMessageDate}</p>
                         </div>
-                        <p class="latestMessageChatPreview ellipsis">${latestMessageSender}: ${chat.latestMessage.content}</p>
+                        <p class="latestMessageChatPreview ellipsis">${latestMessageSender}: ${latestMessageContent}</p>
                     </div>
                 </li>`
     chatList.innerHTML += html   
 }
+async function getChatPreviews() {
+    const res = await fetch('/chats/api')
+    const chats = await res.json()
+    if (chats.error) return alert('Something went wrong')
+    chatList.innerHTML = ""
+    for (let chat of chats) {
+        createChatPreview(chat)
+    }
+    createChatClickListener(chats)
+}
+
 function createChatClickListener(chats){
     chatList.querySelectorAll('.chatPreview').forEach(chatPreview=>{
         chatPreview.addEventListener('click', e=>{

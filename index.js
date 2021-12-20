@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.set('view engine', 'hbs')
 app.set("views", "views")
 app.use(express.urlencoded({extended:true}))
-app.use(express.json())
+app.use(express.json({limit: '50mb'}));
 
 const registerRoute = require('./routes/registerRouter')
 const loginRouter = require('./routes/loginRouter')

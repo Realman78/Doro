@@ -6,8 +6,8 @@ const messageSchema = new Schema({
     content: {type:String, trim: true},
     chat: { type: Schema.Types.ObjectId, ref: 'Chat' },
     sender: { type: Schema.Types.ObjectId, ref: 'User' },
-    readBy: [{ type: Schema.Types.ObjectId, ref: 'User' }]
-
+    readBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    attachment: { type: Schema.Types.ObjectId, ref: 'Attachment' }
 }, { timestamps: true })
 
 var Chat = mongoose.model('Message', messageSchema)

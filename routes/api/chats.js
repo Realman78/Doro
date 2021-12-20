@@ -47,6 +47,7 @@ router.get('/:chatId', async (req,res)=>{
 router.get('/:chatId/messages', async (req,res)=>{
     const chats = await Message.find({chat: req.params.chatId})
     .populate("sender")
+    .populate("attachment")
     .catch((e)=>console.log(e))
     res.send(chats)
 })
