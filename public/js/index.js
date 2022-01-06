@@ -68,6 +68,9 @@ const attachmentsList = document.querySelector('.attachments')
 const modalInput = document.querySelector('.modalInput')
 const sendMessageButtonAttachmentModal = document.getElementById('sendMessageButtonModal')
 const chatContent = document.querySelector('.chatContent')
+const stickerButton = document.getElementById('stickerButton')
+
+let popupOpened = false
 
 window.addEventListener('resize', (e)=>{
     var event = new Event('input', {
@@ -128,7 +131,7 @@ const createChatPreview = (chat)=>{
                     <div class="chatPreviewContent">
                         <div class="chatPreviewUandD">
                             <p class="usernameChatPreview ellipsis">${chatName}</p>
-                            <p class="dateChatPreview">${latestMessageDate}</p>
+                            <p class="dateChatPreview ellipsis">${latestMessageDate}</p>
                         </div>
                         <p class="latestMessageChatPreview ellipsis">${latestMessageSender}: ${latestMessageContent}</p>
                     </div>
@@ -483,3 +486,82 @@ function createButtonsListener(username, inPending = false, container=document){
         })
     })
 }
+const popupErrorMessage = document.getElementById('popupErrorMessage')
+const stickerPopupContent = document.getElementById('stickerPopupContent')
+stickerButton.addEventListener('click', e=>{
+    gifPopupContent.style.visibility = "hidden"
+    if (popupOpened){
+        document.getElementById('stickerPopupContent').style.visibility = "hidden"
+        popupOpened = false;
+        return
+    }
+    gifPopupOpened = false;
+    popupOpened = true
+    document.getElementById('stickerPopupContent').style.visibility = "visible"
+    e.stopPropagation()
+
+    setTimeout(()=>{
+        if (window.ethereum){
+            if (ethereum.isConnected()){
+                if (!ethereum.selectedAddress){
+                    ethereum.enable().then(()=>{
+                        location.reload()
+                    }).catch(e=>{
+                        popupErrorMessage.textContent = "please login"
+                    })
+                }else{
+                    popupErrorMessage.textContent = "Your NFT collection"
+                    showNFTs()
+                }
+            }else{
+                popupErrorMessage.textContent = "Ethereum not connected"
+            }
+        }else{
+            popupErrorMessage.textContent = "Ethereum not enabled"
+        }
+    }, 1000)
+})
+document.getElementById('stickerPopup').addEventListener('click', e=>{
+    e.stopPropagation()
+})
+gifPopup.addEventListener('click', e=>{
+    e.stopPropagation()
+})
+window.addEventListener('click', e=>{
+    if (popupOpened){
+        stickerPopupContent.style.visibility = "hidden"
+        popupOpened = false;
+    }
+    if (gifPopupOpened){
+        gifPopupContent.style.visibility = "hidden"
+        gifPopupOpened = false;
+    }
+})
+function showNFTs(){
+    fetch('https://api.opensea.io/api/v1/assets?owner=0x6b44ba98185d8313c41de29c36317d6a46e326ff&order_direction=desc&offset=0&limit=20')
+  .then(response => response.json())
+  .then(response => {
+      response.assets.forEach(nft=>{
+          if (nft.image_url)
+            stickerPopupContent.innerHTML += `<img class="nftImage" src="${nft.image_url}" >`
+      })
+      document.querySelectorAll('.nftImage').forEach(img=>{
+          img.addEventListener('click', async e=>{
+              await messageSendHandler(img.src, null, null)
+              stickerButton.click()
+          })
+      })
+  })
+  .catch(err => console.error(err));
+}
+
+
+// async function getAssetsById(id){
+//     const res = await fetch(`https://api.opensea.io/api/v1/assets?owner=${id}&order_direction=desc&offset=0&limit=20`)
+//     const data = await res.json()
+//     console.log(data)
+//     for (let asset of data.assets){
+//         let html = `<img src=${asset.image_url} alt="Nani?"/>`
+//         ih.innerHTML += html
+//     }
+// }

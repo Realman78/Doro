@@ -48,6 +48,7 @@
             <div class="contentSection">
                 <div style="display: none;" class="messagingSection" id="messagingSectionId">
                     <div class="chatSection">
+                            
                         <div class="chatHeader">
                             <img id="chatPhoto" src="{{loggedUser.profilePic}}" alt="Profile Picture">
                             <h1 id="chatName">Name</h1>
@@ -66,8 +67,26 @@
                                 </li> --}}
                             </ul>
                         </div>
+                        
+                        
                     </div>
                     <div class="sendSection">
+                        <div id="stickerPopup" class="popup">
+                            <div id="stickerPopupContent" class="popupContent">
+                                <p id="popupErrorMessage">ok</p>
+                            </div>
+                        </div>
+                        <div id="gifPopup" class="popup">
+                            <div id="gifPopupContent" class="popupContent">
+                                <div class="gifPopupHeader">
+                                    <p style="color: white;">GIFs</p>
+                                    <input id="searchTenor" type="text" placeholder="Search Tenor">
+                                </div>
+                                <div class="gifsWrapper">
+                                    
+                                </div>
+                            </div>
+                        </div>
                         <button id="stickerButton" class="sendSectionButton"><i class="fas fa-sticky-note"></i></button>
                         <button id="fileButton" class="sendSectionButton"><i class="fas fa-file-image"></i></button>
                         <input style="display: none;" id="uploadFile" type="file" multiple="multiple">
@@ -161,8 +180,12 @@
         </div>
     </div>
 
+    {{!-- POPUPS --}}
+    
+
     <script src="https://kit.fontawesome.com/85404227e2.js" crossorigin="anonymous"></script>
     <script src="./js/index.js"></script>
     <script src="./js/chats.js"></script>
+    <script src="./js/gifs.js"></script>
 </body>
 </html>

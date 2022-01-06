@@ -15,13 +15,18 @@ async function openChat(chatId){
     chatPhotoImage.src = imgSrc
     chatNameHeader.textContent = chatName
     await getMessages(chatId)
+    var event = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+    });
+    messageInput.dispatchEvent(event)
 }
 async function getMessages(chatId){
     const res = await fetch('/chats/api/'+chatId + '/messages')
     const messages = await res.json()
     
     for (let message of messages){
-        messagesList.innerHTML += createMessageHTML(message)
+        messagesList.innerHTML += await createMessageHTML(message)
     }
     scrollToBottom()
 }
@@ -36,11 +41,50 @@ function scrollToBottom(){
         },0)
     }
 }
-
-function createMessageHTML(message){
+function checkURL(url) {
+    return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
+function testImage(url, timeoutT) {
+    return new Promise(function (resolve, reject) {
+        var timeout = timeoutT || 5000;
+        var timer, img = new Image();
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            reject("error");
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            resolve("success");
+        };
+        timer = setTimeout(function () {
+            // reset .src to invalid URL so it stops previous
+            // loading, but doesn't trigger new load
+            img.src = "//!!!!/test.jpg";
+            reject("timeout");
+        }, timeout);
+        img.src = url;
+    });
+}
+function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
+  }
+async function createMessageHTML(message){
     const messageOwner = message.sender._id === userLoggedIn._id ? "mine" : "others"
-    const picture = message.attachment ? `<img src="${message.attachment.fileURL}" />` : ""
-    const content = message.content ? `<h2>${message.content}</h2>` : ""
+    let picture = message.attachment ? `<img src="${message.attachment.fileURL}" />` : ""
+    let content = message.content ? `<p>${message.content}</p>` : ""
+    if (validURL(message.content)){
+        const ok = await testImage(message.content, 1000)
+        if(checkURL(message.content) || ok === "success"){
+            content = ""
+            picture = `<img src="${message.content}" />`
+        }
+    }
     return `<li class="message">
         <span class="${messageOwner}">
             ${picture}
@@ -58,6 +102,7 @@ messageInput.addEventListener('keydown', e=>{
         e.preventDefault()
         messageSendHandler(messageInput.innerText, null, messageInput)
     }
+    resizeInput(messageInput)
 })
 messageInput.addEventListener('paste', (e)=>{
     e.preventDefault();
@@ -108,10 +153,18 @@ modalInput.addEventListener('paste', (e)=>{
     });
     modalInput.dispatchEvent(event)
 })
-
+const messageInputWrapper = document.getElementById('dajeee')
+const attachmentModalInputWrapper = document.querySelector('.attachmentModalInputWrapper')
 function resizeInput(element) {
     element.parentNode.parentNode.style.height = ""
     element.parentNode.parentNode.style.height = element.scrollHeight * 2 + "px"
+    if (element.scrollHeight - element.parentNode.clientHeight > 5 || element.parentNode.parentNode.clientHeight +5 < element.parentNode.clientHeight){
+        messageInputWrapper.style.height = "85%"
+        attachmentModalInputWrapper.style.height = "85%"
+    }else{
+        messageInputWrapper.style.height = "min-content"
+        attachmentModalInputWrapper.style.height = "min-content"
+    }
 }
 function placeCaretAtEnd(el) {
     el.focus();
@@ -158,13 +211,14 @@ async function messageSendHandler(content=null, attachments=null, container=mess
         const messages = await res.json()
         if (!messages.error){
             if (Array.isArray(messages)){
-                messages.forEach(message=>{
-                    messagesList.innerHTML += createMessageHTML(message)
+                messages.forEach(async message=>{
+                    messagesList.innerHTML += await createMessageHTML(message)
                 })
             }else{
-                messagesList.innerHTML += createMessageHTML(messages)
+                messagesList.innerHTML += await createMessageHTML(messages)
             }
-            container.innerText = ""
+            if (container !== null)
+                container.innerText = ""
             if (container === modalInput) messageInput.innerText = ""
             await getChatPreviews()
             scrollToBottom()
